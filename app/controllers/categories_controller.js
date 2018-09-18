@@ -24,7 +24,7 @@ router.get('/:id',(req,res) => {
         console.log(err);
     }); 
 });
-
+ 
 router.post('/',(req,res) => {
     let body = _.pick(req.body,['name']);
     let categories = new Category(body);
