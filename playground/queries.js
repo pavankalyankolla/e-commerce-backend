@@ -1,5 +1,4 @@
 const { mongoose } = require('../config/db');
-
 const { Product } = require('../app/models/product');
 
 // Product.find() .then((data) => {
