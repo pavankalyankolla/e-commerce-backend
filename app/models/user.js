@@ -3,6 +3,7 @@ const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs'); 
 const _ = require('lodash');
+const { cartItemSchema } = require('./cart_item'); 
 
 const Schema = mongoose.Schema;
 
@@ -44,7 +45,9 @@ const UserSchema = new Schema({
             type : String,
             required : true
         }
-    }]
+    }],
+
+    cartItems : [cartItemSchema]
 });
 
 UserSchema.pre('save',function(next) {
