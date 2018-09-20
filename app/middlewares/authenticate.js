@@ -13,6 +13,15 @@ let authenticateUser = (req,res,next) => {
     })
 }
 
+const authorizeUser = function(req,res,next){
+    if(req.locals.user.role == 'admin'){
+        next();
+    } else {
+        res.status(403).send();
+    }
+} 
+
 module.exports = {
-    authenticateUser
+    authenticateUser,
+    authorizeUser
 }

@@ -4,6 +4,11 @@ const _ = require('lodash');
 const router = express.Router();
 const { Product } = require('../models/product');
 
+
+const { authenticateUser } = require('../middlewares/authenticate');
+const { authorizeUser} = require('../middlewares/authenticate');
+const { validateId } = require('../middlewares/utilites');
+
 // router.get('/',(req,res) => {
 //     res.send('Welcome to products')
 // });
@@ -24,7 +29,7 @@ router.get('/:id',(req,res) => {
 });
 
 
-router.post('/', (req, res) => {
+router.post('/',authenticateUser,authorizeUser,(req, res) => {
 
     let body = _.pick(req.body, ['name','price', 'description', 'category', 'codEligible', 'stock', 'maxUnitPurchase', 'lowStockAlert']);
     let product = new Product(body);
@@ -38,7 +43,7 @@ router.post('/', (req, res) => {
     });
 });
 
-router.put('/:id',(req,res) => {
+router.put('/:id',validateId,authenticateUser,authorizeUser,(req,res) => {
     let id = req.params.id; 
     let body = _.pick(req.body, ['name', 'price', 'description', 'category', 'codEligible', 'stock', 'maxUnitPurchase', 'lowStockAlert']);
     Product.findById(id).then((product) => {
