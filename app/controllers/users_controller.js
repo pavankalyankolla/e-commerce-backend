@@ -28,7 +28,21 @@ router.post('/',(req,res) => {
 
 router.get('/profile',authenticateUser,(req,res) => {
     res.send(req.locals.user)
-})
+});
+
+router.post('/wish_list',authenticateUser,(req,res) => {
+    let user = req.locals.user;
+    let body = _.pick(req.body,['product']);
+    
+    user.wishLists.push(body)
+    
+    user.save().then((user) => {
+        res.send(user)
+    }) .catch((err) => {
+        res.send(err);
+    })
+});
+
 
 module.exports = {
         usersController : router

@@ -47,7 +47,19 @@ const UserSchema = new Schema({
         }
     }],
 
-    cartItems : [cartItemSchema]
+    cartItems : [cartItemSchema],
+
+    wishLists : [{
+        product : {
+            type : Schema.Types.ObjectId,
+            ref : 'Product',
+        },
+        isPresent : {
+            type : String,
+            enum : ['public','private'],
+            default : 'public'
+        }
+    }]
 });
 
 UserSchema.pre('save',function(next) {
@@ -79,7 +91,7 @@ UserSchema.methods.generateToken = function(){
 }
 
 UserSchema.methods.toJSON = function(){
-    return _.pick(this,['_id','username','email','role']); //used for all requests
+    return _.pick(this,['_id','username','email','role','cartItems']); //used for all requests
 }
 
 

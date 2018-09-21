@@ -3,6 +3,7 @@ const _ = require('lodash');
 
 const router = express.Router();
 
+const { User } = require('../models/user');
 
 const { CartItem } = require('../models/cart_item');
 const { authenticateUser} = require('../middlewares/authenticate');
@@ -18,7 +19,15 @@ router.post('/',authenticateUser,(req,res) => {
     let body = _.pick(req.body,['product','quantity']);
     let cartItem = new CartItem(body);
 
-    user.cartItems.push(cartItem);
+    //updating the quantity for same product
+    var item = user.cartItems.find((item)=> {
+      return  item.product.equals(body.product)
+    })
+    if(item){
+        item.quantity += body.quantity
+    } else {
+        user.cartItems.push(cartItem)
+    }
     user.save().then((user) => {
         res.send({
             cartItem,
@@ -42,8 +51,24 @@ router.put('/:id',validateId,authenticateUser,(req,res) => {
             cartItem : inCart,
             notice : "Successfully updated the cart"
         });
+    }) .catch((err) =>{
+        res.send(err);
+    })
+});
+
+//cart to empty
+router.delete('/empty',authenticateUser,(req,res) => {
+    let user = req.locals.user;
+    User.findOneAndUpdate({ _id: user._id},{$set : {cartItems : []}},{new : true}) .then((rem) => {
+        // findByIdAndUpdate({user._id})
+        // console.log(user._id);
+        // console.log(rem);
+        res.send('cart is empty');
+    }).catch((err) => {
+        res.send(err);
     });
 });
+
 
 router.delete('/:id',validateId,authenticateUser,(req,res) => {
     let user = req.locals.user;
@@ -54,8 +79,11 @@ router.delete('/:id',validateId,authenticateUser,(req,res) => {
             cartItems : user.cartItems,
             notice : 'Succesfully removed the product from cart'
         })
-    }) ;
+    })  .catch((err) =>{
+        res.send(err);
+    })
 });
+
 
 module.exports = {
     cartItemsController : router
